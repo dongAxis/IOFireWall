@@ -7,32 +7,98 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CB0226271B6716E300EE126E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CB0226261B6716E300EE126E /* main.c */; };
+		CB04D2AC1B672D8100E0BAD1 /* IOWebFilterClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB40C0BB1B65CA27002EBC4E /* IOWebFilterClient.cpp */; };
+		CB04D2AD1B672D8700E0BAD1 /* IOSharedEventQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CBFB877E1B66138300958FE5 /* IOSharedEventQueue.cpp */; };
+		CB40C0BA1B65C867002EBC4E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB40C0B91B65C867002EBC4E /* IOKit.framework */; };
+		CB40C0BE1B65CA27002EBC4E /* IOWebFilterClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CB40C0BC1B65CA27002EBC4E /* IOWebFilterClient.h */; };
 		CB7164F11B65C4A200571934 /* IOWebFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = CB7164F01B65C4A200571934 /* IOWebFilter.h */; };
 		CB7164F31B65C4A200571934 /* IOWebFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB7164F21B65C4A200571934 /* IOWebFilter.cpp */; };
+		CBFB87811B66138300958FE5 /* IOSharedEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CBFB877F1B66138300958FE5 /* IOSharedEventQueue.h */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		CB0226221B6716E300EE126E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		CB0226241B6716E300EE126E /* user_client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = user_client; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB0226261B6716E300EE126E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		CB13122F1B65C73E00BA631B /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		CB40C0B91B65C867002EBC4E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		CB40C0BB1B65CA27002EBC4E /* IOWebFilterClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IOWebFilterClient.cpp; sourceTree = "<group>"; };
+		CB40C0BC1B65CA27002EBC4E /* IOWebFilterClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOWebFilterClient.h; sourceTree = "<group>"; };
+		CB40C0BF1B65D704002EBC4E /* debugInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debugInfo.h; sourceTree = "<group>"; };
 		CB7164EB1B65C4A100571934 /* IOWebFilter.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IOWebFilter.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB7164EF1B65C4A100571934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CB7164F01B65C4A200571934 /* IOWebFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOWebFilter.h; sourceTree = "<group>"; };
 		CB7164F21B65C4A200571934 /* IOWebFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IOWebFilter.cpp; sourceTree = "<group>"; };
+		CBFB877D1B660E3100958FE5 /* LockGuard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LockGuard.h; sourceTree = "<group>"; };
+		CBFB877E1B66138300958FE5 /* IOSharedEventQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IOSharedEventQueue.cpp; sourceTree = "<group>"; };
+		CBFB877F1B66138300958FE5 /* IOSharedEventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOSharedEventQueue.h; sourceTree = "<group>"; };
+		CBFB87831B6623FA00958FE5 /* private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CB7164E71B65C4A100571934 /* Frameworks */ = {
+		CB0226211B6716E300EE126E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CB7164E71B65C4A100571934 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB40C0BA1B65C867002EBC4E /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CB0226251B6716E300EE126E /* user_client */ = {
+			isa = PBXGroup;
+			children = (
+				CB0226261B6716E300EE126E /* main.c */,
+			);
+			path = user_client;
+			sourceTree = "<group>";
+		};
+		CB13122E1B65C71600BA631B /* common */ = {
+			isa = PBXGroup;
+			children = (
+				CB13122F1B65C73E00BA631B /* common.h */,
+				CB40C0BF1B65D704002EBC4E /* debugInfo.h */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		CB1312301B65C7DF00BA631B /* Reference */ = {
+			isa = PBXGroup;
+			children = (
+				CB40C0B91B65C867002EBC4E /* IOKit.framework */,
+			);
+			name = Reference;
+			sourceTree = "<group>";
+		};
 		CB7164E11B65C4A100571934 = {
 			isa = PBXGroup;
 			children = (
+				CB1312301B65C7DF00BA631B /* Reference */,
+				CB13122E1B65C71600BA631B /* common */,
+				CBFB87821B6623E300958FE5 /* private */,
 				CB7164ED1B65C4A100571934 /* IOWebFilter */,
+				CB0226251B6716E300EE126E /* user_client */,
 				CB7164EC1B65C4A100571934 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				CB7164EB1B65C4A100571934 /* IOWebFilter.kext */,
+				CB0226241B6716E300EE126E /* user_client */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -50,6 +117,11 @@
 			children = (
 				CB7164F01B65C4A200571934 /* IOWebFilter.h */,
 				CB7164F21B65C4A200571934 /* IOWebFilter.cpp */,
+				CB40C0BB1B65CA27002EBC4E /* IOWebFilterClient.cpp */,
+				CB40C0BC1B65CA27002EBC4E /* IOWebFilterClient.h */,
+				CBFB877D1B660E3100958FE5 /* LockGuard.h */,
+				CBFB877E1B66138300958FE5 /* IOSharedEventQueue.cpp */,
+				CBFB877F1B66138300958FE5 /* IOSharedEventQueue.h */,
 				CB7164EE1B65C4A100571934 /* Supporting Files */,
 			);
 			path = IOWebFilter;
@@ -63,6 +135,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		CBFB87821B6623E300958FE5 /* private */ = {
+			isa = PBXGroup;
+			children = (
+				CBFB87831B6623FA00958FE5 /* private.h */,
+			);
+			name = private;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -70,6 +150,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB40C0BE1B65CA27002EBC4E /* IOWebFilterClient.h in Headers */,
+				CBFB87811B66138300958FE5 /* IOSharedEventQueue.h in Headers */,
 				CB7164F11B65C4A200571934 /* IOWebFilter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,6 +159,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		CB0226231B6716E300EE126E /* user_client */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB02262A1B6716E300EE126E /* Build configuration list for PBXNativeTarget "user_client" */;
+			buildPhases = (
+				CB0226201B6716E300EE126E /* Sources */,
+				CB0226211B6716E300EE126E /* Frameworks */,
+				CB0226221B6716E300EE126E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = user_client;
+			productName = user_client;
+			productReference = CB0226241B6716E300EE126E /* user_client */;
+			productType = "com.apple.product-type.tool";
+		};
 		CB7164EA1B65C4A100571934 /* IOWebFilter */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CB7164F61B65C4A200571934 /* Build configuration list for PBXNativeTarget "IOWebFilter" */;
@@ -104,6 +203,9 @@
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = Axis;
 				TargetAttributes = {
+					CB0226231B6716E300EE126E = {
+						CreatedOnToolsVersion = 6.4;
+					};
 					CB7164EA1B65C4A100571934 = {
 						CreatedOnToolsVersion = 6.4;
 					};
@@ -122,6 +224,7 @@
 			projectRoot = "";
 			targets = (
 				CB7164EA1B65C4A100571934 /* IOWebFilter */,
+				CB0226231B6716E300EE126E /* user_client */,
 			);
 		};
 /* End PBXProject section */
@@ -137,10 +240,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CB0226201B6716E300EE126E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB0226271B6716E300EE126E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CB7164E61B65C4A100571934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB04D2AD1B672D8700E0BAD1 /* IOSharedEventQueue.cpp in Sources */,
+				CB04D2AC1B672D8100E0BAD1 /* IOWebFilterClient.cpp in Sources */,
 				CB7164F31B65C4A200571934 /* IOWebFilter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +261,24 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		CB0226281B6716E300EE126E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		CB0226291B6716E300EE126E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		CB7164F41B65C4A200571934 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -254,6 +385,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CB02262A1B6716E300EE126E /* Build configuration list for PBXNativeTarget "user_client" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB0226281B6716E300EE126E /* Debug */,
+				CB0226291B6716E300EE126E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CB7164E51B65C4A100571934 /* Build configuration list for PBXProject "IOWebFilter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -270,6 +410,7 @@
 				CB7164F81B65C4A200571934 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
