@@ -17,7 +17,7 @@ class IOWebFilterClass : public IOService
     OSDeclareDefaultStructors(IOWebFilterClass);
 private:
     static struct sflt_filter ipv4_filter;
-    IOSharedEventQueue *_queue;
+    static IOSharedEventQueue *_queue;
 public:
     static volatile uint64_t CurrentNetworkData;
 public:
@@ -34,12 +34,12 @@ public:
     //@get and set
     STATIC_GETANDSET_ATOMIC_INT64(IOWebFilterClass, CurrentNetworkData);
     //
-    inline IOReturn setSharedQueueNotifyPort(mach_port_t port) {
-        return this->_queue==NULL?kIOReturnError:(this->_queue->setNotificationPort(port), kIOReturnSuccess);
+    inline static IOReturn setSharedQueueNotifyPort(mach_port_t port) {
+        return _queue==NULL?kIOReturnError:(_queue->setNotificationPort(port), kIOReturnSuccess);
     }
 
-    inline IOMemoryDescriptor* getSharedQueueDescriptor() {
-        return (this->_queue==NULL?NULL:this->_queue->getMemoryDescriptor());
+    inline static IOMemoryDescriptor* getSharedQueueDescriptor() {
+        return (_queue==NULL?NULL:_queue->getMemoryDescriptor());
     }
 
 private:

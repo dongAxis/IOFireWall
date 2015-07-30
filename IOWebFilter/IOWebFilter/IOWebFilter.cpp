@@ -15,6 +15,7 @@
 
 OSDefineMetaClassAndStructors(IOWebFilterClass, super)
 volatile uint64_t IOWebFilterClass::CurrentNetworkData=0;
+IOSharedEventQueue* IOWebFilterClass::_queue=NULL;
 
 #pragma mark - static data
 struct sflt_filter IOWebFilterClass::ipv4_filter =
@@ -72,10 +73,12 @@ bool IOWebFilterClass::start (IOService *provider)
     bool res = super::start(provider);
     IOLog("IOKitTest::start\n");
 
-    if(!this->_queue)
+    if(!_queue)
     {
-        this->_queue = IOSharedEventQueue::withCapacity(MAX_SHAREDMEM_SIZE);
+        _queue = IOSharedEventQueue::withCapacity(MAX_SHAREDMEM_SIZE);
     }
+
+    sflt_register(&ipv4_filter, PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     registerService();
 
@@ -86,10 +89,12 @@ void IOWebFilterClass::stop (IOService *provider)
 {
     IOLog("IOKitTest::stop\n");
 
-    if(this->_queue)
+    if(_queue)
     {
-        this->_queue->release();
+        _queue->release();
     }
+
+    sflt_unregister(IPV4_SFLT_HANDLE);
 
     super::stop(provider);
 }
@@ -169,22 +174,22 @@ errno_t IOWebFilterClass::tl_attach_func(void	**cookie, socket_t so)
  */
 void IOWebFilterClass::tl_detach_func(void *cookie, socket_t so)
 {
-    LOG(LOG_DEBUG, "enter");
-    SocketTracker *tracker = (SocketTracker*)cookie;
-    if(tracker==NULL) return;
-    if(tracker->magic==kSocketTrackerInvalid)
-    {
-        delete tracker;
-        return ;
-    }
-
-    delete tracker;
-
-    if(tracker->lock)
-    {
-        IOLockFree(tracker->lock);
-        tracker->lock=NULL;
-    }
+//    LOG(LOG_DEBUG, "enter");
+//    SocketTracker *tracker = (SocketTracker*)cookie;
+//    if(tracker==NULL) return;
+//    if(tracker->magic==kSocketTrackerInvalid)
+//    {
+//        delete tracker;
+//        return ;
+//    }
+//
+//    delete tracker;
+//
+//    if(tracker->lock)
+//    {
+//        IOLockFree(tracker->lock);
+//        tracker->lock=NULL;
+//    }
 }
 
 errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
@@ -248,9 +253,10 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
                                           const struct sockaddr *from, mbuf_t *data, mbuf_t *control,
                                           sflt_data_flag_t flags)
 {
+    LOG(LOG_DEBUG, "I am in");
     SocketTracker *tracker = (SocketTracker*)cookie;
 
-    if(tracker==NULL || (tracker->magic&(kSocketTrackerInvalid|kSocketTrackerDetach))!=0) return 0;
+    if(tracker==NULL || data==NULL || (tracker->magic&(kSocketTrackerInvalid|kSocketTrackerDetach))!=0) return 0;
     if(tracker->lock==NULL)
     {
         tracker->magic=kSocketTrackerInvalid;
@@ -258,8 +264,8 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
     }
 
     IOLockLock(tracker->lock);
-    mbuf_t *head = data;
-    long len=0;
+    mbuf_t head = *data;
+    uint64_t len=0;
 
     if(head==NULL)
     {
@@ -267,12 +273,12 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
         IOLockUnlock(tracker->lock);
         return 0;
     }
-
+    LOG(LOG_DEBUG, "%p", data);
 
     while(head)
     {
-        len = mbuf_len(*head);
-        *head = mbuf_next(*head);
+        len += mbuf_len(head);
+        head = mbuf_next(head);
     }
 
     if(len>sizeof(tracker->request_meg)-1)
@@ -284,8 +290,13 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
     bzero(tracker->request_meg, sizeof(tracker->request_meg));
     mbuf_copydata(*data, 0, len, tracker->request_meg);
 
+    LOG(LOG_DEBUG, "%s", tracker->request_meg);
+
     //todo: sync to shared memory， record a new request
-    
+    if(_queue)
+    {
+        _queue->EnqueueTracker(tracker);
+    }
 
     IOLockUnlock(tracker->lock);
     return 0;

@@ -9,8 +9,35 @@
 #include <stdio.h>
 #include <IOKit/IOKitLib.h>
 #include <mach/mach.h>
+#include <pthread.h>
 
 #include "common.h"
+
+typedef struct
+{
+    mach_port_t data;
+    IODataQueueMemory *address;
+    mach_vm_size_t size;
+}Data;
+
+void* handle(void *data __unused)
+{
+    Data* handle_data = (Data*)data;
+    mach_msg_header_t msg;
+
+    while(1)
+    {
+        bzero(&msg, sizeof(mach_msg_header_t));
+        msg.msgh_id=0;
+        msg.msgh_bits=0;
+        msg.msgh_remote_port=MACH_PORT_NULL;
+        msg.msgh_local_port=handle_data->data;
+        msg.msgh_size = sizeof(mach_msg_header_t);
+        mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), handle_data->data, 0, 0);
+
+        printf("receive data now.");
+    }
+}
 
 int main(int argc, const char * argv[]) {
 
@@ -35,30 +62,21 @@ int main(int argc, const char * argv[]) {
         if(CFEqual(classname, CFSTR(IOWebFilterClassStr)))
         {
 //           printf("%s", CFStringGetCStringPtr(classname, kCFStringEncodingUTF8));
-           kern_return_t ret = IOServiceOpen(service, mach_task_self(), IOWebFilterClientClientTypeID, &con);
-           IOObjectRelease(service);
+            kern_return_t ret = IOServiceOpen(service, mach_task_self(), IOWebFilterClientClientTypeID, &con);
+            IOObjectRelease(service);
 
-           if(ret!=KERN_SUCCESS)
-           {
-               IOObjectRelease(iter);
-               return KERN_FAILURE;
-           }
+            if(ret!=KERN_SUCCESS)
+            {
+                IOObjectRelease(iter);
+                return KERN_FAILURE;
+            }
 
-           mach_port_t port = IODataQueueAllocateNotificationPort();
-           printf("%d", port);
-           ret = IOConnectSetNotificationPort(con, 0, port, NULL);
+            mach_port_t port = IODataQueueAllocateNotificationPort();
+            printf("%d", port);
+            fflush(stdout);
+            ret = IOConnectSetNotificationPort(con, 0, port, 0);
 
-//            mach_msg_header_t msg;
-//
-//            bzero(&msg, sizeof(mach_msg_header_t));
-//            msg.msgh_id=0;
-//            msg.msgh_bits=0;
-//            msg.msgh_remote_port=MACH_PORT_NULL;
-//            msg.msgh_local_port=port;
-//            msg.msgh_size = sizeof(mach_msg_header_t);
-//            mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), port, 0, 0);
-
-           printf("receive msg, ret=%d", ret);
+            printf("receive msg, ret=%d", ret);
 
             mach_vm_address_t address;
             mach_vm_size_t size;
@@ -82,9 +100,21 @@ int main(int argc, const char * argv[]) {
 //                msg.msgh_size = sizeof(mach_msg_header_t);
 //                mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), port, 0, 0);
 
+                pthread_t pid;
+                void *a;
+                Data data;
+                data.address=map;
+                data.size=size;
+                data.data=port;
+
+                pthread_create(&pid, NULL, handle, &port);
+
+                pthread_join(pid, &a);
+
                 IOConnectUnmapMemory(con, 0, mach_task_self(), address);
             }
         }
+
         IOObjectRelease(iter);
     }
     else

@@ -126,7 +126,7 @@ bool IOSharedEventQueue::EnqueueTracker(SocketTracker * data)
         }
     }
 
-    if ( (this->_status&kSharedEventQueueNotifyWhenAddData) || ( head == tail ) || ( dataQueue->head == tail ))
+    //if ( (this->_status&kSharedEventQueueNotifyWhenAddData) || ( head == tail ) || ( dataQueue->head == tail ))
     {
         sendDataAvailableNotification();
     }
