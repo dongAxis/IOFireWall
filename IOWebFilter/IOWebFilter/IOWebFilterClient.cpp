@@ -127,7 +127,7 @@ bool IOWebFilterClientClass::start(IOService * provider)
 
 IOReturn IOWebFilterClientClass::registerNotificationPort(mach_port_t port, UInt32 type, io_user_reference_t refCon)
 {
-    LOG(LOG_ERROR, "in, port is %p", port);
+    LOG(LOG_ERROR, "in, port is %d", port);
 
     return this->_owner->setSharedQueueNotifyPort(port);
 }

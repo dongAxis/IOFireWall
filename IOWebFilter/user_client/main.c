@@ -16,27 +16,50 @@
 typedef struct
 {
     mach_port_t data;
-    IODataQueueMemory *address;
     mach_vm_size_t size;
 }Data;
+
+IODataQueueMemory *map;
 
 void* handle(void *data __unused)
 {
     Data* handle_data = (Data*)data;
     mach_msg_header_t msg;
 
+    printf("queue size %d", map->queueSize);
+    fflush(stdout);
+
     while(1)
     {
-        bzero(&msg, sizeof(mach_msg_header_t));
-        msg.msgh_id=0;
-        msg.msgh_bits=0;
-        msg.msgh_remote_port=MACH_PORT_NULL;
-        msg.msgh_local_port=handle_data->data;
-        msg.msgh_size = sizeof(mach_msg_header_t);
-        mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), handle_data->data, 0, 0);
+//        bzero(&msg, sizeof(mach_msg_header_t));
+//        msg.msgh_id=0;
+//        msg.msgh_bits=0;
+//        msg.msgh_remote_port=MACH_PORT_NULL;
+//        msg.msgh_local_port=handle_data->data;
+//        msg.msgh_size = sizeof(mach_msg_header_t);
+//        mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), handle_data->data, 0, 0);
+        sleep(2);
 
-        printf("receive data now.");
+        IODataQueueEntry *entry=NULL;
+        while((entry = IODataQueuePeek(map)))
+        {
+            DataArgs * args= (DataArgs*)entry->data;
+
+            uint32_t dataSize=0;
+            IODataQueueDequeue(map, NULL, &dataSize);
+            printf("head=%d, tail=%d\n", map->head, map->tail);
+
+            printf("%s\n", args->request_meg);
+            fflush(stdout);
+        }
+
+        printf("head=%d, tail=%d\n", map->head, map->tail);
+        printf("receive data now.\n");
+        fflush(stdout);
     }
+    fflush(stdout);
+
+    return NULL;
 }
 
 int main(int argc, const char * argv[]) {
@@ -74,45 +97,33 @@ int main(int argc, const char * argv[]) {
             mach_port_t port = IODataQueueAllocateNotificationPort();
             printf("%d", port);
             fflush(stdout);
-            ret = IOConnectSetNotificationPort(con, 0, port, 0);
+            ret = IOConnectSetNotificationPort(con, 0, port, NULL);
 
-            printf("receive msg, ret=%d", ret);
+            mach_vm_address_t address=0;
+            mach_vm_size_t size=0;
 
-            mach_vm_address_t address;
-            mach_vm_size_t size;
-
-            IODataQueueMemory *map;
             mach_vm_size_t map_size;
 
             kern_return_t err =  IOConnectMapMemory(con, 0, mach_task_self(), &address, &size, kIOMapAnywhere);
             if(err==KERN_SUCCESS)
             {
                 map = (IODataQueueMemory*)address;
-                map_size = size;
-
-//                mach_msg_header_t msg;
-//    
-//                bzero(&msg, sizeof(mach_msg_header_t));
-//                msg.msgh_id=0;
-//                msg.msgh_bits=0;
-//                msg.msgh_remote_port=MACH_PORT_NULL;
-//                msg.msgh_local_port=port;
-//                msg.msgh_size = sizeof(mach_msg_header_t);
-//                mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), port, 0, 0);
 
                 pthread_t pid;
                 void *a;
                 Data data;
-                data.address=map;
                 data.size=size;
                 data.data=port;
 
+                fflush(stdout);
                 pthread_create(&pid, NULL, handle, &port);
 
                 pthread_join(pid, &a);
 
-                IOConnectUnmapMemory(con, 0, mach_task_self(), address);
+                printf("ready for unmap");
+                IOConnectUnmapMemory(con, 0, mach_host_self(), &address);
             }
+            IOServiceClose(con);
         }
 
         IOObjectRelease(iter);

@@ -31,10 +31,10 @@ struct sflt_filter IOWebFilterClass::ipv4_filter =
     .sf_notify = NULL,
     .sf_getpeername = NULL,
     .sf_getsockname = NULL,
-    .sf_data_in = tl_data_in_func,
-    .sf_data_out = tl_data_out_func,
+    .sf_data_in = IOWebFilterClass::tl_data_in_func,
+    .sf_data_out = IOWebFilterClass::tl_data_out_func,
     .sf_connect_in = NULL,
-    .sf_connect_out = tl_connect_out_func,
+    .sf_connect_out = IOWebFilterClass::tl_connect_out_func,
     .sf_bind = NULL,
     .sf_setoption = NULL,
     .sf_getoption = NULL,
@@ -218,12 +218,6 @@ errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
 
     tracker->magic=kSocketTrackerConnect;   //update status
 
-    //record destination information
-    tracker->destination.family=sock_addr->sin_family;
-    tracker->destination.port = sock_addr->sin_port;
-    bzero(tracker->destination.ip, sizeof(tracker->destination.ip));
-    snprintf(tracker->destination.ip, sizeof(tracker->destination.ip), "%u.%u.%u.%u", IPV4_ADDR(sock_addr->sin_addr.s_addr));
-
     //record source information
     struct sockaddr sockname;
     bzero(&sockname, sizeof(sockname));
@@ -237,6 +231,20 @@ errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
     tracker->source.port = ((struct sockaddr_in*)&sockname)->sin_port;
     bzero(tracker->source.ip, sizeof(tracker->source.ip));
     snprintf(tracker->source.ip, sizeof(tracker->source.ip), "%u.%u.%u.%u", IPV4_ADDR(sock_addr->sin_addr.s_addr));
+
+    if(strncmp(tracker->source.ip, "127.0.0.1", sizeof("127.0.0.1"))==0 ||
+       (tracker->source.port!=80 && tracker->source.port!=8080))
+    {
+        tracker->magic=kSocketTrackerInvalid;
+        if(tracker->lock) IOLockUnlock(tracker->lock);
+        return 0;
+    }
+
+    //record destination information
+    tracker->destination.family=sock_addr->sin_family;
+    tracker->destination.port = sock_addr->sin_port;
+    bzero(tracker->destination.ip, sizeof(tracker->destination.ip));
+    snprintf(tracker->destination.ip, sizeof(tracker->destination.ip), "%u.%u.%u.%u", IPV4_ADDR(sock_addr->sin_addr.s_addr));
 
     IOLockUnlock(tracker->lock);
 
@@ -273,7 +281,6 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
         IOLockUnlock(tracker->lock);
         return 0;
     }
-    LOG(LOG_DEBUG, "%p", data);
 
     while(head)
     {
@@ -290,12 +297,11 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
     bzero(tracker->request_meg, sizeof(tracker->request_meg));
     mbuf_copydata(*data, 0, len, tracker->request_meg);
 
-    LOG(LOG_DEBUG, "%s", tracker->request_meg);
-
     //todo: sync to shared memory， record a new request
     if(_queue)
     {
-        _queue->EnqueueTracker(tracker);
+        LOG(LOG_DEBUG, "ready to enter queue");
+        _queue->EnqueueTracker((DataArgs*)tracker);
     }
 
     IOLockUnlock(tracker->lock);

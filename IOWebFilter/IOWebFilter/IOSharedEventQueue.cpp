@@ -65,11 +65,15 @@ IOMemoryDescriptor* IOSharedEventQueue::getMemoryDescriptor()
     return this->_descriptor;
 }
 
-bool IOSharedEventQueue::EnqueueTracker(SocketTracker * data)
+bool IOSharedEventQueue::EnqueueTracker(DataArgs * data)
 {
-    uint32_t singleTrackerLen = sizeof(SocketTracker);
+    uint32_t singleTrackerLen = sizeof(DataArgs);
     const UInt32 head = dataQueue->head;
     const UInt32 tail = dataQueue->tail;
+
+    LOG(LOG_DEBUG, "head=%d", dataQueue->head);
+    LOG(LOG_DEBUG, "tail=%d", dataQueue->tail);
+
     const UInt32 entrySize = singleTrackerLen+DATA_QUEUE_ENTRY_HEADER_SIZE;
     IODataQueueEntry *entry;
 
@@ -78,12 +82,13 @@ bool IOSharedEventQueue::EnqueueTracker(SocketTracker * data)
         return false;
     }
 
+    LOG(LOG_DEBUG, "this->getQueueSize()=%d", this->getQueueSize());
     if(this->getQueueSize()<tail)
     {
         return false;
     }
 
-    if(tail>head)
+    if(tail>=head)
     {
         if(entrySize<=UINT32_MAX-DATA_QUEUE_ENTRY_HEADER_SIZE &&
         tail+entrySize<=this->getQueueSize())

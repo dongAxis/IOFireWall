@@ -45,9 +45,9 @@ typedef struct _socket_tracker
         uint16_t port;
     }destination, source;
     long data_len;
-    IOLock *lock;
     pid_t pid;
     char request_meg[1024+1];
+    IOLock *lock;
 }SocketTracker;
 
 #endif

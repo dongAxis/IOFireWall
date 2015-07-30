@@ -36,4 +36,18 @@ enum
     //    kSharedEventQueueNotifyMax
 };
 
+typedef struct
+{
+    long magic;
+    struct
+    {
+        char ip[40];
+        uint8_t family;
+        uint16_t port;
+    }destination, source;
+    long data_len;
+    pid_t pid;
+    char request_meg[1024+1];
+}DataArgs;
+
 #endif

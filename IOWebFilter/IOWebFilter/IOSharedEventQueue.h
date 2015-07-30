@@ -14,6 +14,7 @@
 #include <IOKit/IOMemoryDescriptor.h>
 
 #include "private.h"
+#include "common.h"
 
 class IOSharedEventQueue : public IOSharedDataQueue
 {
@@ -28,7 +29,7 @@ public:
     //@override
     virtual void free();
 
-    bool EnqueueTracker(SocketTracker * data);
+    bool EnqueueTracker(DataArgs * data);
     OptionBits getStatus();
     void setStatus(OptionBits st);
 
