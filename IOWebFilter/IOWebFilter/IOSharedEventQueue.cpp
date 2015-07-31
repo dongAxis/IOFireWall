@@ -96,7 +96,7 @@ bool IOSharedEventQueue::EnqueueTracker(DataArgs * data)
             entry = (IODataQueueEntry*)((uint8_t*)dataQueue->queue+dataQueue->tail);
             entry->size=singleTrackerLen;
             memcpy(entry->data, data, singleTrackerLen);
-            OSAddAtomic(singleTrackerLen, (SInt32*)&(dataQueue->tail));
+            OSAddAtomic(entrySize, (SInt32*)&(dataQueue->tail));
         }
         else if(head>singleTrackerLen)
         {
@@ -104,7 +104,7 @@ bool IOSharedEventQueue::EnqueueTracker(DataArgs * data)
 
             if ( ( getQueueSize() - tail ) >= DATA_QUEUE_ENTRY_HEADER_SIZE )
             {
-                ((IODataQueueEntry *)((UInt8 *)dataQueue->queue + tail))->size = singleTrackerLen;
+                ((IODataQueueEntry *)((UInt8 *)dataQueue->queue + tail))->size = entrySize;
             }
 
             memcpy(&dataQueue->queue->data, data, singleTrackerLen);

@@ -24,40 +24,35 @@ IODataQueueMemory *map;
 void* handle(void *data __unused)
 {
     Data* handle_data = (Data*)data;
-    mach_msg_header_t msg;
-
+    mach_port_t port =  handle_data->data;
     printf("queue size %d", map->queueSize);
     fflush(stdout);
 
-    while(1)
+    for(;true;)
     {
-//        bzero(&msg, sizeof(mach_msg_header_t));
-//        msg.msgh_id=0;
-//        msg.msgh_bits=0;
-//        msg.msgh_remote_port=MACH_PORT_NULL;
-//        msg.msgh_local_port=handle_data->data;
-//        msg.msgh_size = sizeof(mach_msg_header_t);
-//        mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), handle_data->data, 0, 0);
-        sleep(2);
+        mach_msg_header_t msg;
+        bzero(&msg, sizeof(mach_msg_header_t));
+        mach_msg(&msg, MACH_RCV_MSG, 0, sizeof(msg), handle_data->data, 0, 0);
+
+        printf("%d, ", msg.msgh_local_port);
+        printf("%d\n", msg.msgh_remote_port);
 
         IODataQueueEntry *entry=NULL;
-        while((entry = IODataQueuePeek(map)))
+        while((entry = IODataQueuePeek(map))!=NULL)
         {
             DataArgs * args= (DataArgs*)entry->data;
 
             uint32_t dataSize=0;
             IODataQueueDequeue(map, NULL, &dataSize);
             printf("head=%d, tail=%d\n", map->head, map->tail);
+            fflush(stdout);
+            printf("size=%s\n", args->request_meg);
+            fflush(stdout);
 
-            printf("%s\n", args->request_meg);
             fflush(stdout);
         }
-
         printf("head=%d, tail=%d\n", map->head, map->tail);
-        printf("receive data now.\n");
-        fflush(stdout);
     }
-    fflush(stdout);
 
     return NULL;
 }
