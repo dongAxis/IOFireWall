@@ -131,6 +131,8 @@ bool IOSharedEventQueue::EnqueueTracker(DataArgs * data)
         }
     }
 
+    if(head==tail) return true;
+
     //if ( (this->_status&kSharedEventQueueNotifyWhenAddData) || ( head == tail ) || ( dataQueue->head == tail ))
     {
         sendDataAvailableNotification();

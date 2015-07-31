@@ -44,7 +44,7 @@ void* handle(void *data __unused)
 
             uint32_t dataSize=0;
             IODataQueueDequeue(map, NULL, &dataSize);
-            printf("head=%d, tail=%d\n", map->head, map->tail);
+            printf("head=%d, tail=%d, proc_name=%s\n", map->head, map->tail, args->proc_name);
             fflush(stdout);
             printf("size=%s\n", args->request_meg);
             fflush(stdout);

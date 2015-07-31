@@ -152,44 +152,44 @@ errno_t IOWebFilterClass::tl_attach_func(void	**cookie, socket_t so)
     }
     tracker->magic=kSocketTrackerAttach;
     tracker->pid = proc_selfpid();      //get the process id
+    LOG(LOG_DEBUG, "pid=%d", tracker->pid);
+
+    if(tracker->pid==0)
+    {
+        tracker->magic=kSocketTrackerInvalid;
+        return 0;
+    }
+
+    bzero(tracker->proc_name, sizeof(tracker->proc_name));
+    proc_name(tracker->pid, tracker->proc_name, sizeof(char)*(sizeof(tracker->proc_name)-1));
+    LOG(LOG_DEBUG, "proc=%s, magic=%ld", tracker->proc_name, tracker->magic);
 
     return 0;
 }
 
-/*
- typedef struct _socket_tracker
- {
- long magic;
- struct
- {
- char ip[40];
- uint8_t family;
- uint16_t port;
- }destination, source;
- long data_len;
- IOLock *lock;
- pid_t pid;
- char request_meg[1024+1];
- }SocketTracker;
- */
 void IOWebFilterClass::tl_detach_func(void *cookie, socket_t so)
 {
 //    LOG(LOG_DEBUG, "enter");
 //    SocketTracker *tracker = (SocketTracker*)cookie;
 //    if(tracker==NULL) return;
+//
+//    if(tracker->lock) IOLockLock(tracker->lock);
 //    if(tracker->magic==kSocketTrackerInvalid)
 //    {
 //        delete tracker;
+//        if(tracker->lock) IOLockUnlock(tracker->lock);
 //        return ;
 //    }
 //
-//    delete tracker;
+//    if(tracker->lock) IOLockUnlock(tracker->lock);
 //
 //    if(tracker->lock)
 //    {
 //        IOLockFree(tracker->lock);
 //        tracker->lock=NULL;
 //    }
+//
+//    delete tracker;
 }
 
 errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
@@ -202,19 +202,21 @@ errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
     if(tracker->lock==NULL)
     {
         tracker->magic=kSocketTrackerInvalid;
+        LOG(LOG_DEBUG, "I am in, %s, magic=%ld", tracker->proc_name, tracker->magic);
         return 0;
     }
 
     struct sockaddr_in *sock_addr = (struct sockaddr_in*)to;
     //just handle the ipv4 address
-    if(sock_addr==NULL)
+    if(sock_addr!=NULL)
     {
         if(sock_addr->sin_family==AF_INET6)
             tracker->magic=kSocketTrackerInvalid;
+        LOG(LOG_DEBUG, "I am in, %s, magic=%ld", tracker->proc_name, tracker->magic);
         return 0;
     }
 
-    IOLockLock(tracker->lock);
+    if(tracker->lock) IOLockLock(tracker->lock);
 
     tracker->magic=kSocketTrackerConnect;   //update status
 
@@ -225,6 +227,7 @@ errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
     if(sockname.sa_family==AF_INET6)
     {
         tracker->magic=kSocketTrackerInvalid;
+        if(tracker->lock) IOLockUnlock(tracker->lock);
         return 0;
     }
     tracker->source.family = ((struct sockaddr_in*)&sockname)->sin_family;
@@ -232,21 +235,21 @@ errno_t	IOWebFilterClass::tl_connect_out_func(void *cookie, socket_t so,
     bzero(tracker->source.ip, sizeof(tracker->source.ip));
     snprintf(tracker->source.ip, sizeof(tracker->source.ip), "%u.%u.%u.%u", IPV4_ADDR(sock_addr->sin_addr.s_addr));
 
-    if(strncmp(tracker->source.ip, "127.0.0.1", sizeof("127.0.0.1"))==0 ||
-       (tracker->source.port!=80 && tracker->source.port!=8080))
-    {
-        tracker->magic=kSocketTrackerInvalid;
-        if(tracker->lock) IOLockUnlock(tracker->lock);
-        return 0;
-    }
-
     //record destination information
     tracker->destination.family=sock_addr->sin_family;
     tracker->destination.port = sock_addr->sin_port;
     bzero(tracker->destination.ip, sizeof(tracker->destination.ip));
     snprintf(tracker->destination.ip, sizeof(tracker->destination.ip), "%u.%u.%u.%u", IPV4_ADDR(sock_addr->sin_addr.s_addr));
 
-    IOLockUnlock(tracker->lock);
+    if(strncmp(tracker->destination.ip, "127.0.0.1", sizeof("127.0.0.1"))==0 ||
+       (tracker->destination.port!=80 && tracker->destination.port!=8080))
+    {
+        tracker->magic=kSocketTrackerInvalid;
+        if(tracker->lock) IOLockUnlock(tracker->lock);
+        return 0;
+    }
+
+    if(tracker->lock) IOLockUnlock(tracker->lock);
 
     return 0;
 }
@@ -261,10 +264,17 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
                                           const struct sockaddr *from, mbuf_t *data, mbuf_t *control,
                                           sflt_data_flag_t flags)
 {
-    LOG(LOG_DEBUG, "I am in");
     SocketTracker *tracker = (SocketTracker*)cookie;
 
-    if(tracker==NULL || data==NULL || (tracker->magic&(kSocketTrackerInvalid|kSocketTrackerDetach))!=0) return 0;
+//    __asm__("int3");
+
+    LOG(LOG_DEBUG, "I am in, %s, magic=%ld", tracker->proc_name, tracker->magic);
+
+    if(tracker==NULL || data==NULL || (tracker->magic&(kSocketTrackerInvalid|kSocketTrackerDetach))!=0)
+    {
+        LOG(LOG_DEBUG, "in return process");
+        return 0;
+    }
     if(tracker->lock==NULL)
     {
         tracker->magic=kSocketTrackerInvalid;
@@ -300,7 +310,7 @@ errno_t	IOWebFilterClass::tl_data_in_func(void *cookie, socket_t so,
     //todo: sync to shared memory， record a new request
     if(_queue)
     {
-        LOG(LOG_DEBUG, "ready to enter queue");
+        LOG(LOG_DEBUG, "enter queue");
         _queue->EnqueueTracker((DataArgs*)tracker);
     }
 

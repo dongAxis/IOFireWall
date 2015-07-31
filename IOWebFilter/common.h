@@ -47,6 +47,7 @@ typedef struct
     }destination, source;
     long data_len;
     pid_t pid;
+    char proc_name[50+1];
     char request_meg[1024+1];
 }DataArgs;
 
