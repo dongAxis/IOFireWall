@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:IOWebFilter"
+      name = "IOWebFilter">
+      <Group
+         location = "group:FireWallClient"
+         name = "FireWallClient">
+         <Group
+            location = "group:FireWallClient"
+            name = "FireWallClient">
+            <FileRef
+               location = "group:main.cpp">
+            </FileRef>
+         </Group>
+      </Group>
+      <Group
+         location = "group:IOWebFilter"
+         name = "IOWebFilter">
+         <FileRef
+            location = "group:IOSharedEventQueue.cpp">
+         </FileRef>
+         <FileRef
+            location = "group:IOSharedEventQueue.h">
+         </FileRef>
+         <FileRef
+            location = "group:IOWebFilter.cpp">
+         </FileRef>
+         <FileRef
+            location = "group:IOWebFilter.h">
+         </FileRef>
+         <FileRef
+            location = "group:IOWebFilterClient.cpp">
+         </FileRef>
+         <FileRef
+            location = "group:IOWebFilterClient.h">
+         </FileRef>
+         <FileRef
+            location = "group:Info.plist">
+         </FileRef>
+         <FileRef
+            location = "group:LockGuard.h">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:IOWebFilter.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:common.h">
+      </FileRef>
+      <FileRef
+         location = "group:debugInfo.h">
+      </FileRef>
+      <FileRef
+         location = "group:private.h">
+      </FileRef>
+      <Group
+         location = "group:user_client"
+         name = "user_client">
+         <FileRef
+            location = "group:main.c">
+         </FileRef>
+      </Group>
+   </Group>
+</Workspace>

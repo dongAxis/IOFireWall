@@ -17,6 +17,16 @@
 		CBFB87811B66138300958FE5 /* IOSharedEventQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CBFB877F1B66138300958FE5 /* IOSharedEventQueue.h */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CB5B771A1B6B1F53003F1032 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CB5B77161B6B1F52003F1032 /* WebFilterClient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CB5B770C1B6B1F52003F1032;
+			remoteInfo = WebFilterClient;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		CB0226221B6716E300EE126E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -37,6 +47,7 @@
 		CB40C0BB1B65CA27002EBC4E /* IOWebFilterClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IOWebFilterClient.cpp; sourceTree = "<group>"; };
 		CB40C0BC1B65CA27002EBC4E /* IOWebFilterClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOWebFilterClient.h; sourceTree = "<group>"; };
 		CB40C0BF1B65D704002EBC4E /* debugInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debugInfo.h; sourceTree = "<group>"; };
+		CB5B77161B6B1F52003F1032 /* WebFilterClient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WebFilterClient.xcodeproj; path = ../WebFilterClient/WebFilterClient.xcodeproj; sourceTree = "<group>"; };
 		CB7164EB1B65C4A100571934 /* IOWebFilter.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IOWebFilter.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB7164EF1B65C4A100571934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CB7164F01B65C4A200571934 /* IOWebFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOWebFilter.h; sourceTree = "<group>"; };
@@ -91,9 +102,18 @@
 			name = Reference;
 			sourceTree = "<group>";
 		};
+		CB5B77171B6B1F52003F1032 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CB5B771B1B6B1F53003F1032 /* WebFilterClient */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		CB7164E11B65C4A100571934 = {
 			isa = PBXGroup;
 			children = (
+				CB5B77161B6B1F52003F1032 /* WebFilterClient.xcodeproj */,
 				CB1312301B65C7DF00BA631B /* Reference */,
 				CB13122E1B65C71600BA631B /* common */,
 				CBFB87821B6623E300958FE5 /* private */,
@@ -221,6 +241,12 @@
 			mainGroup = CB7164E11B65C4A100571934;
 			productRefGroup = CB7164EC1B65C4A100571934 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = CB5B77171B6B1F52003F1032 /* Products */;
+					ProjectRef = CB5B77161B6B1F52003F1032 /* WebFilterClient.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				CB7164EA1B65C4A100571934 /* IOWebFilter */,
@@ -228,6 +254,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		CB5B771B1B6B1F53003F1032 /* WebFilterClient */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = WebFilterClient;
+			remoteRef = CB5B771A1B6B1F53003F1032 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		CB7164E91B65C4A100571934 /* Resources */ = {
